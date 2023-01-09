@@ -1,5 +1,3 @@
-import { useState } from "react"
-
 const Filter = ({search, setSearch, setFilter}) => {
 
     const handleSearchChange = (event) => {
