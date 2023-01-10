@@ -11,7 +11,6 @@ function App() {
     axios
       .get("https://restcountries.com/v2/all")
       .then(res => {
-        // console.log(res.data);
         setCountries(res.data.filter(country => country.name.toLowerCase().includes(search)));
       })
   }
@@ -22,7 +21,7 @@ function App() {
     searchResult = <p>Too many matches, specify another filter</p>;
   } else if (countries.length > 1) {
     searchResult = <div>{countries.map(country => <p key={country.name}>{country.name}</p>)}</div>
-  } else {
+  } else if (countries.length === 1) {
     searchResult = <Country country={countries[0]} />
   }
 
