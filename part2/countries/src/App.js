@@ -1,13 +1,17 @@
 import axios from "axios";
 import { useState } from "react";
 import Country from "./components/Country";
+import ShowButton from "./components/ShowButton";
 
 function App() {
   const [countries, setCountries] = useState([])
   const [search, setSearch] = useState("")
+  const [countryToDisplay, setCountryToDisplay] = useState()
+  const [show, setShow] = useState(false)
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value)
+    setShow(show ? !show : show)
     axios
       .get("https://restcountries.com/v2/all")
       .then(res => {
@@ -20,7 +24,7 @@ function App() {
   if (countries.length > 10) {
     searchResult = <p>Too many matches, specify another filter</p>;
   } else if (countries.length > 1) {
-    searchResult = <div>{countries.map(country => <p key={country.name}>{country.name}</p>)}</div>
+    searchResult = show ? <Country country={countryToDisplay} /> : <div>{countries.map(country => <p key={country.name}>{country.name} <ShowButton country={country} setCountryToDisplay={setCountryToDisplay} setShow={setShow} /></p>)}</div>
   } else if (countries.length === 1) {
     searchResult = <Country country={countries[0]} />
   }
