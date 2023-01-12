@@ -23,6 +23,17 @@ const App = () => {
       })
   }, [])
 
+  const handleDelete = (id, name) => {
+    if (window.confirm(`Do you really want to delete ${name}?`)) {
+      const url = `http://localhost:3001/persons/${id}`
+      axios
+        .delete(url)
+        .then(res => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+      }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -33,7 +44,7 @@ const App = () => {
       <PersonForm persons={persons} setPersons={setPersons}/>
 
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow}/>
+      <Persons personsToShow={personsToShow} handleDelete={handleDelete}/>
     </div>
   )
 }

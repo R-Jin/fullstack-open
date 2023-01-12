@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import axios from 'axios'
 
 const PersonForm = ({persons, setPersons}) => {
     const [newName, setNewName] = useState('')
@@ -7,13 +8,25 @@ const PersonForm = ({persons, setPersons}) => {
     const addPerson = (event) => {
         event.preventDefault()
         if (persons.some(person => person.name === newName)) {
-        alert(`${newName} is already in the phonebook`);
+        // alert(`${newName} is already in the phonebook`);
+          if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
+            const person = persons.find(p => p.name === newName)
+            const url = `http://localhost:3001/persons/${person.id}`
+            const updatedPerson = { ...person, number: newNumber}
+            axios
+              .put(url, updatedPerson)
+              .then(res => {
+                setPersons(persons.map(p => p.id !== person.id ? p : res.data))
+              })
+          }
         } else {
         const newPerson = { name: newName, number: newNumber }
-        setPersons(persons.concat(newPerson))
-
-        setNewName('')
-        setNewNumber('')
+        const url = "http://localhost:3001/persons"
+        axios.post(url, newPerson).then(res => {
+          setPersons(persons.concat(res.data))
+          setNewName('')
+          setNewNumber('')
+        })
         }
     }
 
@@ -24,6 +37,7 @@ const PersonForm = ({persons, setPersons}) => {
     const handleNumberChange = (event) => {
         setNewNumber(event.target.value)
     }
+
 
     return (
       <form onSubmit={addPerson}>
