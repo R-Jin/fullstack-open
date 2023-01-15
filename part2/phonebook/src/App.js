@@ -3,12 +3,16 @@ import axios from 'axios'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
+import "./index.css"
 
 const App = () => {
   const [persons, setPersons] = useState([])
 
   const [search, setSearch] = useState("")
   const [filter, setFilter] = useState(false)
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [error, setError] = useState(false)
 
   const personsToShow = filter
     ? persons.filter(person => person.name.toLowerCase().includes(search))
@@ -41,7 +45,8 @@ const App = () => {
       <Filter search={search} setSearch={setSearch} setFilter={setFilter} />
 
       <h1>Add new</h1>
-      <PersonForm persons={persons} setPersons={setPersons}/>
+      <Notification message={notificationMessage} error={error} />
+      <PersonForm persons={persons} setPersons={setPersons} setNotificationMessage={setNotificationMessage} setError={setError} />
 
       <h2>Numbers</h2>
       <Persons personsToShow={personsToShow} handleDelete={handleDelete}/>

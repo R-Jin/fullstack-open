@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import axios from 'axios'
 
-const PersonForm = ({persons, setPersons}) => {
+const PersonForm = ({persons, setPersons, setNotificationMessage, setError}) => {
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
 
@@ -18,14 +18,28 @@ const PersonForm = ({persons, setPersons}) => {
               .then(res => {
                 setPersons(persons.map(p => p.id !== person.id ? p : res.data))
               })
+              .catch(() => {
+                setNotificationMessage(`Information of ${person.name} has already been removed from the server`)
+                setError(true)
+                setTimeout(() => {
+                  setNotificationMessage(null)
+                  setError(false)
+                }, 5000)
+              })
           }
         } else {
         const newPerson = { name: newName, number: newNumber }
         const url = "http://localhost:3001/persons"
-        axios.post(url, newPerson).then(res => {
+        axios
+          .post(url, newPerson)
+          .then(res => {
           setPersons(persons.concat(res.data))
           setNewName('')
           setNewNumber('')
+          setNotificationMessage(`Added ${res.data.name}`)
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 5000)
         })
         }
     }
