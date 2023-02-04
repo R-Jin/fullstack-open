@@ -20,7 +20,7 @@ const App = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/persons")
+      .get("http://localhost:3001/api/persons")
       .then((res) => {
         console.log("fullfilled");
         setPersons(res.data)
@@ -29,7 +29,7 @@ const App = () => {
 
   const handleDelete = (id, name) => {
     if (window.confirm(`Do you really want to delete ${name}?`)) {
-      const url = `http://localhost:3001/persons/${id}`
+      const url = `http://localhost:3001/api/persons/${id}`
       axios
         .delete(url)
         .then(res => {
