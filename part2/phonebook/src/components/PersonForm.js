@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import axios from 'axios'
 
+const baseUrl = '/api/persons'
+
 const PersonForm = ({persons, setPersons, setNotificationMessage, setError}) => {
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
@@ -11,7 +13,7 @@ const PersonForm = ({persons, setPersons, setNotificationMessage, setError}) => 
         // alert(`${newName} is already in the phonebook`);
           if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
             const person = persons.find(p => p.name === newName)
-            const url = `http://localhost:3001/api/persons/${person.id}`
+            const url = `${baseUrl}/${person.id}`
             const updatedPerson = { ...person, number: newNumber}
             axios
               .put(url, updatedPerson)
@@ -29,9 +31,8 @@ const PersonForm = ({persons, setPersons, setNotificationMessage, setError}) => 
           }
         } else {
         const newPerson = { name: newName, number: newNumber }
-        const url = "http://localhost:3001/api/persons"
         axios
-          .post(url, newPerson)
+          .post(baseUrl, newPerson)
           .then(res => {
           setPersons(persons.concat(res.data))
           setNewName('')

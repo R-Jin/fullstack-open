@@ -6,6 +6,8 @@ import Filter from './components/Filter'
 import Notification from './components/Notification'
 import "./index.css"
 
+const baseUrl = '/api/persons'
+
 const App = () => {
   const [persons, setPersons] = useState([])
 
@@ -20,7 +22,7 @@ const App = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/api/persons")
+      .get(baseUrl)
       .then((res) => {
         console.log("fullfilled");
         setPersons(res.data)
@@ -29,7 +31,7 @@ const App = () => {
 
   const handleDelete = (id, name) => {
     if (window.confirm(`Do you really want to delete ${name}?`)) {
-      const url = `http://localhost:3001/api/persons/${id}`
+      const url = `${baseUrl}/${id}`
       axios
         .delete(url)
         .then(res => {
