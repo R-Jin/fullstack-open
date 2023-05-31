@@ -1,57 +1,67 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
-import Persons from './components/Persons'
-import PersonForm from './components/PersonForm'
+import { useEffect, useState } from 'react'
 import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import personServices from './services/person'
 import Notification from './components/Notification'
-import "./index.css"
-
-const baseUrl = '/api/persons'
 
 const App = () => {
-  const [persons, setPersons] = useState([])
+  const [persons, setPersons] = useState([]) 
 
-  const [search, setSearch] = useState("")
-  const [filter, setFilter] = useState(false)
-  const [notificationMessage, setNotificationMessage] = useState(null)
-  const [error, setError] = useState(false)
-
-  const personsToShow = filter
-    ? persons.filter(person => person.name.toLowerCase().includes(search))
-    : persons
-
-  useEffect(() => {
-    axios
-      .get(baseUrl)
-      .then((res) => {
-        console.log("fullfilled");
-        setPersons(res.data)
+  const hook = () => {
+    personServices
+      .getAllPersons()
+      .then(returnedPerson => {
+        setPersons(returnedPerson)
       })
-  }, [])
+  }
 
-  const handleDelete = (id, name) => {
-    if (window.confirm(`Do you really want to delete ${name}?`)) {
-      const url = `${baseUrl}/${id}`
-      axios
-        .delete(url)
-        .then(res => {
-          setPersons(persons.filter(person => person.id !== id))
-        })
-      }
+  useEffect(hook,[])
+
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [filter, setFilter] = useState('')
+  const [notification, setNotification] = useState(null)
+  const [isError, setIsError] = useState(false)
+
+  const personsToShow = filter === ''     // Filter only when filter field is not empty
+    ? persons
+    : persons.filter(person => person.name.toLowerCase().includes(filter))
+
+  const handlePersonDelete = (id, name) => {
+    if (window.confirm(`Delete ${name}?`))
+    setPersons(persons.filter(person => person.id !== id))
+    personServices.deletePerson(id)
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notification} isError={isError} />
+      <Filter filter={filter} setFilter={setFilter}/>
 
-      <Filter search={search} setSearch={setSearch} setFilter={setFilter} />
-
-      <h1>Add new</h1>
-      <Notification message={notificationMessage} error={error} />
-      <PersonForm persons={persons} setPersons={setPersons} setNotificationMessage={setNotificationMessage} setError={setError} />
+      <h2>Add a new</h2>
+      <PersonForm 
+        newName={newName}
+        setNewName={setNewName}
+        newNumber={newNumber}
+        setNewNumber={setNewNumber}
+        persons={persons}
+        setPersons={setPersons}
+        setNotification={setNotification}
+        setIsError={setIsError}
+      />
 
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow} handleDelete={handleDelete}/>
+      {
+        personsToShow.map(person => {
+          return (
+            <div key={person.id}>
+              <p>{person.name} {person.number}</p>
+              <button onClick={() => handlePersonDelete(person.id, person.name)}>Delete</button>
+            </div>
+          )
+        })
+      }
     </div>
   )
 }

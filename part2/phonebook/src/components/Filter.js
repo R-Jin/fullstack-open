@@ -1,12 +1,14 @@
-const Filter = ({search, setSearch, setFilter}) => {
 
-    const handleSearchChange = (event) => {
-        setSearch(event.target.value)
-        setFilter(event.target.value !== "")
+const Filter = ({filter, setFilter}) => {
+
+    const handleFilterChange = (event) => {
+        setFilter(event.target.value)
     }
 
     return (
-      <div>Filter shown with: <input value={search} onChange={handleSearchChange}/></div>
+      <div>
+        Filter shown with: <input value={filter} onChange={handleFilterChange} />
+      </div>
     )
 }
 

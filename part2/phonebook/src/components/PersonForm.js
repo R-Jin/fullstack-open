@@ -1,67 +1,69 @@
-import { useState } from 'react'
-import axios from 'axios'
+import personServices from '../services/person'
 
-const baseUrl = '/api/persons'
-
-const PersonForm = ({persons, setPersons, setNotificationMessage, setError}) => {
-    const [newName, setNewName] = useState('')
-    const [newNumber, setNewNumber] = useState('')
+const PersonForm = ({newName, setNewName, newNumber, setNewNumber, persons, setPersons, setNotification, setIsError}) => {
 
     const addPerson = (event) => {
         event.preventDefault()
+
+        const personObject = {
+        name: newName, 
+        number: newNumber,
+        }
+
         if (persons.some(person => person.name === newName)) {
-        // alert(`${newName} is already in the phonebook`);
-          if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
-            const person = persons.find(p => p.name === newName)
-            const url = `${baseUrl}/${person.id}`
-            const updatedPerson = { ...person, number: newNumber}
-            axios
-              .put(url, updatedPerson)
-              .then(res => {
-                setPersons(persons.map(p => p.id !== person.id ? p : res.data))
+          if (window.confirm(`${personObject.name} already exists in the phonebook, replace the old number with a new one?`)) {
+
+            const changedPerson = {
+              ...persons.find(person => person.name === newName),
+              number: newNumber
+            }
+
+            personServices
+              .updatePerson(changedPerson.id, changedPerson)
+              .then(updatedPerson => {
+                const updatedPersons = persons.map(person => person.id === updatedPerson.id ? updatedPerson : person);
+                setPersons(updatedPersons)
               })
-              .catch(() => {
-                setNotificationMessage(`Information of ${person.name} has already been removed from the server`)
-                setError(true)
+              .catch(error => {
+                setPersons(persons.filter(p => p.id !== changedPerson.id))
+                setNotification(`Information of ${changedPerson.name} has already been removed from the server`)
+                setIsError(true)
                 setTimeout(() => {
-                  setNotificationMessage(null)
-                  setError(false)
+                  setNotification(null)
+                  setIsError(false)
                 }, 5000)
               })
           }
         } else {
-        const newPerson = { name: newName, number: newNumber }
-        axios
-          .post(baseUrl, newPerson)
-          .then(res => {
-          setPersons(persons.concat(res.data))
-          setNewName('')
-          setNewNumber('')
-          setNotificationMessage(`Added ${res.data.name}`)
+          personServices
+            .createPerson(personObject)
+            .then(returnedPerson => {
+              setPersons(persons.concat(returnedPerson))
+              setNewName('')
+              setNewNumber('')
+            })
+
+          setNotification(`Added ${personObject.name}`)
           setTimeout(() => {
-            setNotificationMessage(null)
+            setNotification(null)
           }, 5000)
-        })
         }
     }
 
     const handleNameChange = (event) => {
         setNewName(event.target.value)
     }
-
+    
     const handleNumberChange = (event) => {
         setNewNumber(event.target.value)
     }
 
-
     return (
       <form onSubmit={addPerson}>
         <div>
-          name: <input value={newName} onChange={handleNameChange}/>
+          Name: <input value={newName} onChange={handleNameChange} />
         </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange}/>
-        </div>
+        <div>number: <input value={newNumber} onChange={handleNumberChange}/></div>
         <div>
           <button type="submit">add</button>
         </div>
