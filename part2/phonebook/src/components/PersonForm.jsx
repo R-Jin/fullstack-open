@@ -1,30 +1,46 @@
 import personService from '../services/persons'
 
-const PersonForm = ({newName, setNewName, newNumber, setNewNumber, persons, setPersons}) => {
+const PersonForm = ({newName, setNewName, newNumber, setNewNumber, persons, setPersons, setStatusMessage, setErrorMessage}) => {
 
   const addPerson = (event) => {
-    const newPerson = {name: newName, number: newNumber}
     event.preventDefault()
     // Check if person is in phone book
-    if (persons.some(person => person.name === newName)) {
+    if (persons.some(person => person.name.toLowerCase() === newName.toLowerCase())) {
       // Ask if we want to update the phone number
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-        const duplicateId = persons.find(person => person.name === newName).id
+        const duplicatePerson = persons.find(person => person.name.toLowerCase() === newName.toLowerCase())
+        const duplicateId = duplicatePerson.id
+        const updatedPerson = {name: duplicatePerson.name, number: newNumber}
         personService
-          .updatePerson(duplicateId, newPerson)
+          .updatePerson(duplicateId, updatedPerson)
           .then(updatePerson => {
             const updatedPersons = persons.map(person => person.id === duplicateId ? updatePerson : person)
             setPersons(updatedPersons)
+            setStatusMessage(`Updated number of ${updatedPerson.name}`)
+            setTimeout(() => {
+              setStatusMessage(null)
+            }, 5000)
+          })
+          .catch(error => {
+            setErrorMessage(`Information of ${updatedPerson.name} has already been removed from the server`)
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
           })
         setNewName("")
         setNewNumber("")
       }
     } else {
       // Create person
+      const newPerson = {name: newName, number: newNumber}
       personService
         .createPerson(newPerson)
         .then(newPerson => {
           setPersons(persons.concat(newPerson))
+          setStatusMessage(`Added ${newPerson.name}`)
+          setTimeout(() => {
+            setStatusMessage(null)
+          }, 5000)
         })
       setNewName("")
       setNewNumber("")

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import Notification from './components/Notification'
 
 import Persons from './components/Persons'
 import Filter from './components/Filter'
@@ -11,6 +12,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [statusMessage, setStatusMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -30,13 +33,24 @@ const App = () => {
     }
   }
 
+  const notificationStyle = {
+    background: "lightgrey",
+    fontSize: "20px",    
+    borderStyle: "solid", 
+    borderRadius: "5px",  
+    padding: "10px",       
+    marginBottom: "10px", 
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification style={{...notificationStyle, color: "green"}} message={statusMessage} />
+      <Notification style={{...notificationStyle, color: "red"}} message={errorMessage} />
       <Filter filter={filter} setFilter={setFilter}/>
 
       <h2>add a new</h2>
-      <PersonForm newName={newName} setNewName={setNewName} newNumber={newNumber} setNewNumber={setNewNumber} persons={persons} setPersons={setPersons}/>
+      <PersonForm newName={newName} setNewName={setNewName} newNumber={newNumber} setNewNumber={setNewNumber} persons={persons} setPersons={setPersons} setStatusMessage={setStatusMessage} setErrorMessage={setErrorMessage} />
 
       <h2>Numbers</h2>
       <Persons persons={persons} filter={filter} handleDelete={handleDelete} />
