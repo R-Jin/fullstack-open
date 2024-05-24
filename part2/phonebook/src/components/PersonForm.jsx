@@ -1,10 +1,31 @@
+import personService from '../services/persons'
+
 const PersonForm = ({newName, setNewName, newNumber, setNewNumber, persons, setPersons}) => {
+
   const addPerson = (event) => {
+    const newPerson = {name: newName, number: newNumber}
     event.preventDefault()
+    // Check if person is in phone book
     if (persons.some(person => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
+      // Ask if we want to update the phone number
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const duplicateId = persons.find(person => person.name === newName).id
+        personService
+          .updatePerson(duplicateId, newPerson)
+          .then(updatePerson => {
+            const updatedPersons = persons.map(person => person.id === duplicateId ? updatePerson : person)
+            setPersons(updatedPersons)
+          })
+        setNewName("")
+        setNewNumber("")
+      }
     } else {
-      setPersons(persons.concat({name: newName, number: newNumber}))
+      // Create person
+      personService
+        .createPerson(newPerson)
+        .then(newPerson => {
+          setPersons(persons.concat(newPerson))
+        })
       setNewName("")
       setNewNumber("")
     }

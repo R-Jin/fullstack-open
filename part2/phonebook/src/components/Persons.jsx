@@ -1,4 +1,6 @@
-const Persons = ({filter, persons}) => {
+import Person from "./Person"
+
+const Persons = ({filter, persons, handleDelete}) => {
     const inName = (person) => person.name.toLowerCase().includes(filter.toLowerCase()) 
     let filteredNames = persons
 
@@ -9,7 +11,7 @@ const Persons = ({filter, persons}) => {
     return (
         <>
             {filteredNames.map(person => (
-                <div key={person.name}>{person.name} {person.number}</div>
+                <Person key={person.id} id={person.id} person={person} handleDelete={handleDelete} />
             ))}
         </>
     )
