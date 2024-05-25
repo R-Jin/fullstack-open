@@ -35,9 +35,9 @@ const PersonForm = ({newName, setNewName, newNumber, setNewNumber, persons, setP
       const newPerson = {name: newName, number: newNumber}
       personService
         .createPerson(newPerson)
-        .then(newPerson => {
-          setPersons(persons.concat(newPerson))
-          setStatusMessage(`Added ${newPerson.name}`)
+        .then(newPersons => {
+          setPersons(newPersons)
+          setStatusMessage(`Added ${newName}`)
           setTimeout(() => {
             setStatusMessage(null)
           }, 5000)
