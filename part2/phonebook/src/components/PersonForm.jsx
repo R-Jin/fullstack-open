@@ -55,13 +55,22 @@ const PersonForm = ({
     } else {
       // Create person
       const newPerson = { name: newName, number: newNumber };
-      personService.createPerson(newPerson).then((newPerson) => {
-        setPersons(persons.concat(newPerson));
-        setStatusMessage(`Added ${newName}`);
-        setTimeout(() => {
-          setStatusMessage(null);
-        }, 5000);
-      });
+      personService
+        .createPerson(newPerson)
+        .then((newPerson) => {
+          setPersons(persons.concat(newPerson));
+          setStatusMessage(`Added ${newName}`);
+          setTimeout(() => {
+            setStatusMessage(null);
+          }, 5000);
+        })
+        .catch((error) => {
+          setErrorMessage(error.response.data.error);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
+          console.log(error.response.data.error);
+        });
       setNewName("");
       setNewNumber("");
     }
