@@ -41,7 +41,7 @@ const PersonForm = ({
               setStatusMessage(null);
             }, 5000);
           })
-          .catch((error) => {
+          .catch((_error) => {
             setErrorMessage(
               `Information of ${updatedPerson.name} has already been removed from the server`,
             );
@@ -93,4 +93,3 @@ const PersonForm = ({
 };
 
 export default PersonForm;
-
