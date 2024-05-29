@@ -32,19 +32,24 @@ const PersonForm = ({
         personService
           .updatePerson(duplicateId, updatedPerson)
           .then((updatePerson) => {
-            const updatedPersons = persons.map((person) =>
-              person.id === duplicateId ? updatePerson : person,
-            );
-            setPersons(updatedPersons);
-            setStatusMessage(`Updated number of ${updatedPerson.name}`);
-            setTimeout(() => {
-              setStatusMessage(null);
-            }, 5000);
+            console.log(updatePerson);
+            if (updatePerson) {
+              const updatedPersons = persons.map((person) =>
+                person.id === duplicateId ? updatePerson : person,
+              );
+              setPersons(updatedPersons);
+              setStatusMessage(`Updated number of ${updatedPerson.name}`);
+              setTimeout(() => {
+                setStatusMessage(null);
+              }, 5000);
+            } else {
+              setErrorMessage(
+                `Information of ${updatedPerson.name} has already been removed from the server`,
+              );
+            }
           })
-          .catch((_error) => {
-            setErrorMessage(
-              `Information of ${updatedPerson.name} has already been removed from the server`,
-            );
+          .catch((error) => {
+            setErrorMessage(error);
             setTimeout(() => {
               setErrorMessage(null);
             }, 5000);
